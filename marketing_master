@@ -1,0 +1,4 @@
+-- fl_freeze count by year
+select * from reporting_db.marketing_master 
+ where coupon_code in ( 'ASPGI', 'ASPGIF');
+ select year(created_at), fl_freeze, count(*) from reporting_db.marketing_master group by 1,2;
