@@ -1,0 +1,24 @@
+select a.created_at as registration_time, 
+a.phone_number, b.user_name, q.language, ad.user_state
+from (select * from reporting_db.marketing_master where date(created_at) >= "2024-05-09" and coupon_code = "EQXEAF5FLE") a
+left join user b on a.user_id = b.id
+left join
+(SELECT user_id ,
+case when json_extract(questions_response, '$[0].question_response[0].options[0].field_text') is not null then
+json_unquote(json_extract(questions_response, '$[0].question_response[0].options[0].field_text')) else
+json_unquote(json_extract(questions_response, '$[0].options[0].option_text')) end as language,
+case when json_extract(questions_response, '$[1].question_response[0].options[0].field_text') is not null then
+json_unquote(json_extract(questions_response, '$[1].question_response[0].options[0].field_text')) else
+json_unquote(json_extract(questions_response, '$[1].options[0].option_text')) end as occupation,
+case when json_extract(questions_response, '$[2].question_response[0].options[0].field_text') is not null then
+json_unquote(json_extract(questions_response, '$[2].question_response[0].options[0].field_text')) else
+json_unquote(json_extract(questions_response, '$[2].options[0].option_text')) end as income,
+case when json_extract(questions_response, '$[3].question_response[0].options[0].field_text') is not null then
+json_unquote(json_extract(questions_response, '$[3].question_response[0].options[0].field_text')) else
+json_unquote(json_extract(questions_response, '$[3].options[0].option_text')) end as itramount
+from questionnaire_response where id in (SELECT max(id) from questionnaire_response group by user_id)) q
+on a.user_id= q.user_id
+-- address
+left join
+(SELECT user_id , state as user_state from user_address where id in (SELECT max(id) from user_address group by user_id)) ad
+on a.user_id= ad.user_id
