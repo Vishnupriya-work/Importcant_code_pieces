@@ -1,0 +1,48 @@
+select a.user_id from asp_playground.sm_allS10_upto_jan012024_prefr_fibe_predicted a
+where a.phone_number not in (
+select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17")
+and a.user_id not in (select id from asp_playground.may_wapp_prefr_first6000)
+order by prob_fibe desc limit 6000 ;
+
+desc asp_playground.sangya_score_may;
+
+
+select * from
+(select a.user_id, a.phone_number, prob_fibe, d.sentat from 
+asp_playground.sangya_score_may a
+where a.phone_number not in (
+select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17")
+and a.user_id not in (select id from asp_playground.may_wapp_prefr_first6000)
+order by prob_fibe desc limit 6000)
+a
+left join asp_playground.mp_wapp_campaign d
+on a.phone_number = d.mobilenumber
+
+
+select a.user_id, a.phone_number from asp_playground.sangya_score_may a
+where a.phone_number not in (
+select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17")
+order by prob_fibe desc limit 8000;
+
+
+select user_id, prob_fibe from  asp_playground.sm_allS10_upto_jan012024_prefr_fibe_predicted 
+where user_id not in (select id from user where phone_number in (
+select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17"))
+and user_id not in (select id from asp_playground.may_wapp_prefr_first6000)
+order by prob_fibe desc limit 8000;
+
+select user_id, phone_number, prob_fibe from  asp_playground.sangya_score_may 
+where user_id not in (select id from user where phone_number in (
+select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17"))
+and user_id not in (select id from asp_playground.may_wapp_prefr_first6000)
+and user_id not in (select user_id from asp_user_partnership where partner = 'fibe' and
+ json_extract(offer_details, '$.approved') = 0)
+order by prob_fibe desc limit 6000;
+
+
+select distinct external_status from asp_user_partnership where partner = 'fibe' and external_status;
