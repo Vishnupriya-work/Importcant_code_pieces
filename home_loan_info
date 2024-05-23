@@ -1,0 +1,13 @@
+select a.user_id, ad.city, ad.state, 
+credit_score, a.account_status 
+from (select * from bureau_master.crif_account_master where id in (select max(id) from bureau_master.crif_account_master
+where account_type in ("Housing Loan",  "Microfinance Housing Loan") group by user_id)) a
+left join (select * from user_address where 
+id in (select max(id) from user_address group by user_id)) ad 
+on a.user_id = ad.user_id
+left join
+(select user_id,
+json_unquote(JSON_EXTRACT(response, '$."B2C-REPORT".SCORES.SCORE."SCORE-VALUE"')) as credit_score from crif_stage3 
+WHERE id in (select max(id) from crif_stage3 group by user_id)) b
+on a.user_id = b.user_id
+;
