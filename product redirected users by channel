@@ -1,0 +1,12 @@
+select mm.user_id,
+date(mm.created_at), coupon_code, count(products_redirected)
+from 
+(SELECT user_id, min(created_at) as first_time_offer_seen_at, GROUP_CONCAT( case when activity = 'apply' then
+ b.sub_offer_name else NULL END ORDER BY b.sub_offer_name SEPARATOR ',') AS products_redirected,
+ GROUP_CONCAT( case when activity <> 'apply' then b.sub_offer_name else NULL END ORDER BY
+ b.sub_offer_name SEPARATOR ',') AS products_viewed FROM (select * from user_offer_activity_details) a
+ left join (select * from asp_playground.sub_offer_name) b on a.sub_offer_id = b.sub_offer_id group by 1) g
+ left join reporting_db.marketing_master mm on g.user_id  = mm.user_id
+left join user b on g.user_id = b.id
+where coupon_code in ('ASPGI', 'ASPGIF')
+group by 1,2,3;
