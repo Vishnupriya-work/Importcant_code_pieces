@@ -1,0 +1,14 @@
+-- user created
+select date(created_at), count(phone_number) from reporting_db.marketing_master 
+where date(created_at) >= '2024-05-01' 
+group by 1;
+
+-- approved internally 
+select user_id, date(created_at) as created_at, JSON_EXTRACT(output_json, "$.spid_config.ad.module_output.mod_uw_ad_015_mp_fibe.approved") as fibe_approved from de_looger
+where DATE(created_at) >= "2024-05-01" and purpose = "bureaucheck" ;
+
+-- approved clicked
+select date(a.created_at), loan_id, a.phone_number
+ from reporting_db.marketing_master a
+left join asp_user_partnership b on a.user_id = b.user_id
+where date(a.created_at) >= '2024-05-01' and json_extract(offer_details, '$.approved') = 1 and partner = 'prefr	';
