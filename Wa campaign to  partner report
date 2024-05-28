@@ -1,0 +1,44 @@
+select user_id, internal_status, external_status from asp_user_partnership where 
+user_id in (
+
+-- prefr campaign to prefr users in partner report
+-- fibe campaign to fibe users in partner report
+
+select * from asp_playground.mp_prefr_userstatus_1
+where id in (select max(id) from asp_playground.mp_prefr_userstatus_1 group by mobilenumber) and
+mobilenumber in (
+select right(mobilenumber, 10) as phone_number from asp_playground.mp_wapp_campaign where partner in ("fibe","prefr")
+and date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-05-09"
+and date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') <= "2024-05-20") ;
+
+SELECT *
+FROM asp_playground.mp_prefr_userstatus_1
+WHERE id IN (
+    SELECT MAX(id)
+    FROM asp_playground.mp_prefr_userstatus_1
+    GROUP BY mobilenumber
+)
+AND mobilenumber IN (
+    SELECT RIGHT(mobilenumber, 10) AS phone_number
+    FROM asp_playground.mp_wapp_campaign
+    WHERE partner IN ('fibe', 'prefr')
+    AND DATE_FORMAT(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'), '%Y-%m-%d') >= '2024-05-09'
+    AND DATE_FORMAT(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'), '%Y-%m-%d') <= '2024-05-20'
+);
+
+
+
+SELECT *
+FROM asp_playground.mp_iifl_userstatus_1
+WHERE id IN (
+    SELECT MAX(id)
+    FROM asp_playground.mp_iifl_userstatus_1
+    GROUP BY mobilenumber
+)
+AND mobilenumber IN (
+    SELECT RIGHT(mobilenumber, 10) AS phone_number
+    FROM asp_playground.mp_wapp_campaign
+    WHERE partner IN ('fibe', 'prefr')
+    AND DATE_FORMAT(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'), '%Y-%m-%d') >= '2024-05-09'
+    AND DATE_FORMAT(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'), '%Y-%m-%d') <= '2024-05-20'
+);
