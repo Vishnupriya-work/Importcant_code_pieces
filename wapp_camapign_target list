@@ -1,3 +1,50 @@
+-- third piece, as of june 1
+SELECT phone_number
+FROM asp_playground.sangya_score_may 
+WHERE user_id NOT IN (
+    SELECT id 
+    FROM user 
+    WHERE phone_number IN (
+        SELECT mobilenumber 
+        FROM asp_playground.mp_wapp_campaign 
+        WHERE partner = 'fibe' 
+        -- AND DATE_FORMAT(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'), '%Y-%m-%d') >= '2024-05-15'
+    )
+)
+AND user_id NOT IN (SELECT id FROM asp_playground.may_wapp_prefr_2nd12k)
+AND user_id NOT IN (SELECT id FROM asp_playground.thrid_12K_prefr) 
+AND user_id NOT IN (
+    SELECT user_id 
+    FROM asp_user_partnership 
+    WHERE partner = 'fibe' 
+    AND JSON_EXTRACT(offer_details, '$.approved') = 0
+) and prob_fibe <= '0.47'
+ORDER BY prob_fibe DESC 
+LIMIT 12000;
+
+
+-- prefr conditions
+drop table asp_playground.thrid_12K_prefr;
+create table asp_playground.thrid_12K_prefr as
+select b.phone_number, b.id from asp_playground.sm_allS10_upto_jan012024_prefr_fibe_predicted a
+left join user b
+on a.user_id = b.id
+where a.user_id not in (select id from user where phone_number in (select mobilenumber from asp_playground.mp_prefr_userstatus_1
+ where loanstatus in (
+ 'dedupe_rejected', 'policy_rejected', 'loan_application_started', 'tentative_offer_accepted', 'age_rejected','pincode_rejected',
+'income_rejected','ops_rejected','lender_rejected','pan_rejected','bureau_questionnaire_rejected')))
+and a.user_id not in  (
+select id from user where phone_number in (select mobilenumber from asp_playground.mp_wapp_campaign where 
+date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-04-17"))
+and a.user_id not in (select id from asp_playground.may_wapp_prefr_2nd12k) and 
+a.user_id not in (select id from asp_playground.may_wapp_prefr_first6000)
+order by prob_prefr desc limit 12000 ;
+
+
+
+
+
+
 -- second piece
 select user_id, phone_number, prob_fibe from  asp_playground.sangya_score_may 
 where user_id not in (select id from user where phone_number in (
