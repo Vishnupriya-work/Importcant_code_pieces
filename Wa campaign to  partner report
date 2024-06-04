@@ -1,3 +1,18 @@
+select filename, count(mobilenumber) from asp_playground.mp_wapp_campaign group by 1;
+
+select user_id, loan_id, partner, internal_status, external_status from asp_user_partnership where 
+user_id in (
+select id from user where phone_number in 
+(
+select right(mobilenumber, 10) as phone_number from asp_playground.mp_wapp_campaign where partner in ("fibe","prefr")
+and date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') >= "2024-05-21"
+and date_format(STR_TO_DATE(sentat, '%b %d, %Y, %h:%i %p'),  '%Y-%m-%d') <= "2024-06-01")) ;
+
+
+
+
+
+
 select user_id, internal_status, external_status from asp_user_partnership where 
 user_id in (
 
